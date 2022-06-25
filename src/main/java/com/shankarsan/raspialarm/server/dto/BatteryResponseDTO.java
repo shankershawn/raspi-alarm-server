@@ -1,4 +1,4 @@
-package com.shankarsan.raspialarm.dto;
+package com.shankarsan.raspialarm.server.dto;
 
 public class BatteryResponseDTO {
 	

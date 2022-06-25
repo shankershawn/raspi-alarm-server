@@ -10,7 +10,7 @@
 	<groupId>com.shankarsan</groupId>
 	<artifactId>raspi-alarm-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>raspi-alarm</name>
+	<name>raspi-alarm-server</name>
 	<description>raspi-alarm-server</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,6 +43,11 @@
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.shankarsan</groupId>
+			<artifactId>raspi-alarm-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
