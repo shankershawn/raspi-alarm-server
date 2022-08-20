@@ -1,5 +1,7 @@
 package com.shankarsan.raspialarm.server.configuration;
 
+import java.util.Calendar;
+
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -11,8 +13,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.exception.ShutdownException;
-import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.shankarsan.raspialarm.server.interfaces.AlarmPulse;
@@ -36,7 +36,9 @@ private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 	@PreDestroy
 	public void onExit() {
 		_log.info("Shutting down Pi4JContext.");
-		context.shutdown();
+		if(null != context) {
+			context.shutdown();
+		}
 	}
 	
 	@Bean("AlarmDigitalOutput")
@@ -46,6 +48,7 @@ private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 				.shutdown(DigitalState.LOW)
 				.provider("pigpio-digital-output")
 				.address(pin)
+				.id(Long.toString(Calendar.getInstance().getTimeInMillis()))
 				.build();
 	}
 	
@@ -57,13 +60,11 @@ private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 					digitalOutput.pulse(pulseMillis, timeunit);
 					Thread.sleep(intervalMillis);
 				}
-			} catch (ShutdownException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				
 			}
 		};
 	}
