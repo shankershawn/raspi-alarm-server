@@ -22,7 +22,7 @@ public class AlarmConfig {
 	
 private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 	
-	@Value("${battery-alarm-service.ring-battery-alarm.pin}")
+	@Value("${raspi.alarm.server.battery-alarm.pin}")
 	private Integer pin;
 
 	private Context context;

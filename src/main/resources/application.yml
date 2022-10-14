@@ -1,0 +1,14 @@
+server:
+  port: ${port:8080}
+spring:
+  kafka:
+    bootstrap-servers: ${bootstrap.server:129.154.37.114:9092}
+    consumer:
+      key-deserializer: ${key.deserializer:org.apache.kafka.common.serialization.StringDeserializer}
+      value-deserializer: ${value.deserializer:com.shankarsan.raspialarm.client.deserialization.MessageDeserializer}
+      
+raspi:
+  alarm:
+    server:
+      battery-alarm:
+        pin: 5
