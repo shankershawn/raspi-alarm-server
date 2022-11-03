@@ -12,14 +12,9 @@ public class KafkaConsumer {
 	
 	@Autowired
 	private BatteryAlarmService batteryAlarmService;
-
 	
 	@KafkaListener(topics = "battery_level", groupId = "battery_level_group")
 	public void listenGroupBatteryLevelGroup(MessageDTO messageDTO) {
-		System.out.println(messageDTO);
-		Thread alarmThread = new Thread(() -> {
-			batteryAlarmService.ringBatteryAlarm(messageDTO);
-		});
-		alarmThread.start();
+		batteryAlarmService.ringBatteryAlarm(messageDTO);
 	}
 }

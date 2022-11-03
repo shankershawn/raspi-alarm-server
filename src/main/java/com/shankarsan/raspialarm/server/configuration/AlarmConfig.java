@@ -8,8 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
@@ -28,20 +30,25 @@ private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 	private Context context;
 	
 	@Bean("Pi4JContext")
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public Context getContext() {
-		context = Pi4J.newAutoContext();
+		if(context == null || context.isShutdown()) {
+			context = Pi4J.newAutoContext();
+		}
 		return context;
 	}
 	
 	@PreDestroy
-	public void onExit() {
-		_log.info("Shutting down Pi4JContext.");
-		if(null != context) {
+	public void clearPiContext() {
+		_log.trace("Shutting down Pi4JContext.");
+		if(null != context && !context.isShutdown()) {
 			context.shutdown();
+			_log.debug("Pi4JContext shutdown complete.");
 		}
 	}
 	
 	@Bean("AlarmDigitalOutput")
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public DigitalOutput getDigitalOutput(@Qualifier("Pi4JContext") Context context) {
 		return DigitalOutput.newBuilder(context)
 				.initial(DigitalState.LOW)
@@ -53,6 +60,7 @@ private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 	}
 	
 	@Bean
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public AlarmPulse getAlarmPulse(@Qualifier("AlarmDigitalOutput") DigitalOutput digitalOutput) {
 		return (pulseCount, pulseMillis, intervalMillis, timeunit) -> {
 			try {
@@ -61,10 +69,9 @@ private static Logger _log = LoggerFactory.getLogger(AlarmConfig.class);
 					Thread.sleep(intervalMillis);
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-				
+				clearPiContext();
 			}
 		};
 	}
